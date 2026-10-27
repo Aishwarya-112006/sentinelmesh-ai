@@ -1,0 +1,71 @@
+name: sentinelmesh
+
+# Hardening shared by the four placeholder zones.
+x-zone: &zone
+  image: python:3.12-slim
+  command: ["python", "-m", "http.server", "8000"]
+  read_only: true
+  tmpfs: ["/tmp"]
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  pids_limit: 100
+  user: "1000:1000"
+  working_dir: /tmp
+
+services:
+  ingress:
+    image: nginx:1.27-alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - ./src/ingress/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [edge, ctrl_net]
+    depends_on: [gateway]
+
+  gateway:
+    build: ./src/gateway
+    environment:
+      OPA_URL: http://opa:8181/v1/data/sentinelmesh/authz/allow
+      LEDGER_PATH: /data/ledger.jsonl
+      RED_KEY: ${RED_KEY:-dev-red-key}
+      BLUE_KEY: ${BLUE_KEY:-dev-blue-key}
+    volumes:
+      - ledger_data:/data
+    networks: [ctrl_net, red_net, blue_net, model_net, eval_net]
+    depends_on: [opa]
+
+  opa:
+    image: openpolicyagent/opa:latest
+    command: ["run", "--server", "--addr=0.0.0.0:8181", "/policies"]
+    volumes:
+      - ./src/policies:/policies:ro
+    networks: [ctrl_net]
+
+  red:
+    <<: *zone
+    networks: [red_net]
+
+  blue:
+    <<: *zone
+    networks: [blue_net]
+
+  model:
+    <<: *zone
+    networks: [model_net]
+
+  eval:
+    <<: *zone
+    networks: [eval_net]
+
+# "internal: true" means no route to the host network or the internet.
+networks:
+  edge: {}
+  ctrl_net: { internal: true }
+  red_net: { internal: true }
+  blue_net: { internal: true }
+  model_net: { internal: true }
+  eval_net: { internal: true }
+
+volumes:
+  ledger_data: {}
