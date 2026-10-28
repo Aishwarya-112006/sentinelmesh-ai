@@ -423,10 +423,10 @@ Replace the placeholders after deploying and testing the services.
 
 | Resource | Link |
 |---|---|
-| Live Frontend | Coming soon |
-| Backend API | Coming soon |
-| Backend Health | Coming soon |
-| Ledger Verification | Coming soon |
+| Live Frontend | https://sentinelmesh-ai.vercel.app/ |
+| Backend API | https://sentinelmesh-ai.onrender.com |
+| Backend Health |  Check API Status |
+| Ledger Verification | Verify Audit Ledger |
 | GitHub Repository | [SentinelMesh AI](https://github.com/Aishwarya-112006/sentinelmesh-ai) |
 
 ## 👥 Team and Contributing
