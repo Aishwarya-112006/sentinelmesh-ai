@@ -1,6 +1,9 @@
 import { useState } from "react";
 import "./App.css";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "https://sentinelmesh-ai.onrender.com";
+
 function App() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [health, setHealth] = useState(null);
@@ -16,9 +19,9 @@ function App() {
     try {
       const [healthResponse, ledgerResponse, auditResponse] =
         await Promise.all([
-          fetch("http://localhost:8000/health"),
-          fetch("http://localhost:8000/v1/ledger/verify"),
-          fetch("http://localhost:8000/v1/ledger?limit=10"),
+          fetch(`${API_BASE_URL}/health`),
+fetch(`${API_BASE_URL}/v1/ledger/verify`),
+fetch(`${API_BASE_URL}/v1/ledger?limit=10`),
         ]);
 
       if (
@@ -356,7 +359,7 @@ const denialRate =
           <section className="dashboard-statusbar">
             <div className="statusbar-item">
               <span className="statusbar-label">API ENDPOINT</span>
-              <strong>localhost:8000</strong>
+              <strong>sentinelmesh-ai.onrender.com</strong>
             </div>
 
             <div className="statusbar-item">
